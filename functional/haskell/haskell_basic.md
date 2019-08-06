@@ -126,3 +126,101 @@ returnNext x = x+1
 returnNext :: Num a=> a->a
 returnNext x = x + 1
 ```
+
+
+#### 클래스 제약
+`:i`를 이용해서 타입 클래스를 조사 할 수 있음
+
+``` haskell
+Prelude> :i Num
+class Num a where
+  (+) :: a -> a -> a
+  (-) :: a -> a -> a
+  (*) :: a -> a -> a
+  negate :: a -> a
+  abs :: a -> a
+  signum :: a -> a
+  fromInteger :: Integer -> a
+  {-# MINIMAL (+), (*), abs, signum, fromInteger, (negate | (-)) #-}
+        -- Defined in ‘GHC.Num’
+instance Num Word -- Defined in ‘GHC.Num’
+instance Num Integer -- Defined in ‘GHC.Num’
+instance Num Int -- Defined in ‘GHC.Num’
+instance Num Float -- Defined in ‘GHC.Float’
+instance Num Double -- Defined in ‘GHC.Float’
+```
+
+### 타입 클래스 종류
+* Num : 숫자 타입의 공통된 동작
+* Integral : 정수 타입들의 공통된 동작
+* Floating
+* Eq
+* Ord  : 크기(>,<,>=,<=)
+* Show : 값이 문자로 표현
+* Read : 문자열을 이용해서 값으로 변환 'succ (read "1"::Int)'
+* Enum
+
+``` haskell
+
+foo::Int->Int->Int
+-- 반드시 else가 있어야 함.
+-- 명령형 언어의 if : statement
+-- Haskell의 if : expression (반드시 값이 있어야 함)
+foo x y = if x > y then x + y else x - y
+
+-- 임의의 타입으로 만들면 
+-- Ord 와 Num 클래스 제약을 만족해야 함
+foo::(Ord a, Num a) =>a->a->a
+
+foo x y = if x > y then x + y else x - y
+```
+
+### 다형성 상수
+
+3의 타입은? 확인해 보면 아래 처럼 조금 복잡하게 나옴.
+
+``` haskell
+*Main> :t 3
+3 :: Num p => p
+```
+  
+아래의 경우 `f2 3` 으로 하는 경우 에러가 발생하지 않고 3.0으로 리턴됨  
+그럼 다시 위에서 `3::Num p=>p`라고 나온 것은 3은 임의의 타입(타입 이름이 소문자 이므로)인데, 타입클래스 Num의 인스턴스이다(Int,Double,Float중 하나)라는 의미.
+``` haskell
+f1::Int->Int
+f1 x = x
+
+f2::Double->Double
+f2 x=x
+```
+
+정확한 타입을 지정하려면
+``` haskell
+*Main> :t 3::Int
+3::Int :: Int
+-- 정확히 Int 라고 나오고
+-- f2에 3을 Int라고 타입을 정해서 보내면 컴파일 에러가 발생함
+*Main> f2 3::Int
+
+<interactive>:32:1: error:
+    ? Couldn't match expected type ‘Int’ with actual type ‘Double’
+    ? In the expression: f2 3 :: Int
+      In an equation for ‘it’: it = f2 3 :: Int
+
+```
+
+#### 변수 만들기
+
+``` haskell
+-- 인자가 1개인 함수
+one::Int->Int
+one x = x
+
+-- 인자가 없는 함수
+-- 결국 변수 선언 하는 것 같은데..
+-- 변수(상수)에 값을 부여하는 것을 binding이라고 부름.
+zero ::Int
+zero = 1
+-- 값을 binding하면 변경할 수 없음
+--zero = 2
+```
