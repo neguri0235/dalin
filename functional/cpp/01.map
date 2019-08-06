@@ -1,0 +1,36 @@
+
+#include <vector>
+#include <algorithm>
+#include <vector>
+#include <iostream>
+
+/*
+ map 이라고는 표현하지만, std::map 과는 다름.
+ 고차함수(High order function) 로서 컨테이너의 각 요소에 함수를 적용하여 동일한 순서로 새로운 컨테이러를
+ 만드는 것을 의미함.
+*/
+
+auto main() -> int
+{
+    std::vector<int> v1;
+    for(int i=0; i<5; i++) v1.push_back(i);
+
+    std::vector<int> v2;
+    v2.resize(v1.size());
+
+    std::transform(
+                   begin(v1),
+                   end(v1),
+                   begin(v2),
+                   [](int i){return i*i;});
+
+    for(auto v: v1) std::cout<<v<<" ";
+    std::cout<<std::endl;
+
+    for(auto v: v2) std::cout<<v<<" ";
+    std::cout<<std::endl;
+
+
+
+    return 0;
+}
