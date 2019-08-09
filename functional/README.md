@@ -1,3 +1,3 @@
 # functional
 
-Fuctional programming for c++
+Fuctional programming for c++, haskell ...
