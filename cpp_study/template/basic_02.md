@@ -138,3 +138,167 @@ int main()
 cout<<p<<endl;
 }
 ```
+
+이것을 어떻게 해결 하느냐..
+1. friend 함수 선언시에 함수 자체를 템플릿 모양으로 선언  
+>  
+``` cpp
+    friend ostream& operator<<(ostream& os, const Point<T>& p);
+    //이경우 빌드 에러 남.
+
+    template<typename U>
+    friend ostream& operator<<(ostream& os, const Point<U>& p);
+    // 이렇게 만듬
+```
+
+2. 이것 보다는, friend 함수를 일반 함수로 만들고, 구현을 클래스 템플릿 내부에 포함시킴
+> 
+``` cpp
+template<typename T>
+class Point{
+    T x,y;
+public:
+    Point(T a = 0, T b = 0) : x(a), y(b){}
+    friend ostream& operator<<(ostream& os, const Point<T>& p)
+    {
+          return os <<p.x<<' '<<p.y<<'\n';
+    }
+ 
+};
+int main()
+{
+    Point<int> p(1,2);
+    cout<<p<<endl;
+}
+```
+
+
+### Typename
+
+``` cpp
+class Test{
+public:
+    enum { value1 = 1};
+    static int value2;
+    typedef int INT;
+    using SHORT = short;
+    class innerClass{};
+};
+int Test::value2 = 1;
+
+int main()
+{
+    int n1 = Test::value1;  // 값을 꺼내는 것
+    int n2 = Test::value2;  // 값을 꺼내는 것
+    Test::INT a;             // 타입을 꺼내는 것
+    Test::SHORT b;           // 타입을 꺼내는 것
+    Test::innerClass c;      // 타입을 꺼내는 것
+}
+```
+
+다른 예제를 보면
+``` cpp
+int p = 0;
+class Test{
+	enum {DWORD = 5;} //(2)
+	typedef int DWORD; //(3)
+};
+template<typename T>int foo(T t){
+    T::DWORD* p; // (1)
+	Test::DWORD*p //(4)
+    typename T::DWORD* p; //(5)
+    return 0;
+}
+int main()
+{
+    Test t;
+    foo(t);
+}
+```
+> (1) 이 어떻게 해석이 되는지?   만약 (2) 라고 선언이 되어 있다면 값을 꺼낸 것이 되어 '5*p' 라는 표현  
+(3) 이라고 하면 지역 변수 p(포인터)를 선언한 것으로 의미 
+만약 (4)와 같이 T 가 아닌 Test 로 되어 있다면 컴파일러는 Test 선언을 보고서 값인지, 선언인지 구분 가능하지만
+Test 가 아니라 T로 되어 있으면 구분 할 수가 없음.
+그래서 결국은 (5)와 같이 'typename'을 붙여서 DWORD를 타입으로 해석해 달라고 해야 함
+
+
+### value_type  
+
+이런 함수가 있을 경우, 이왕이면 vector<int> 뿐만 아니라 vector<double>도 같이 입력 받으면 좋을것 같은데  
+``` cpp
+void print_first_element(vector<int>& v)
+{
+    int n = v.front();
+    cout<<n<<endl;
+}
+int main()
+{
+    vector<int> v = {1,2,3};
+    print_first_element(v);
+}
+```
+
+이렇게 하면 원하는대로 되었음. 그런데 'vector' 가 아닌 'list'를 프린트 하고 싶으면.
+
+``` cpp 
+template<typename T>
+void print_first_element(vector<T>& v)
+{
+    T n  = v.front();
+    cout<<n<<endl;
+}
+int main()
+{
+    vector<double> v = {1,2,3};
+    print_first_element(v);
+}
+```
+
+모든 container를 전달 하고 싶을때, 이렇게..  
+``` cpp
+template<typename T>
+void print_first_element(T& v) //(1)
+{
+    ? n  = v.front(); //(2)
+    cout<<n<<endl;
+}
+int main()
+{
+    list<double> v = {1,2,3};
+    print_first_element(v);
+}
+```
+(1) 과 같이 container 자체를 전달 할 수 있는데, (2)에서는 T container에 있는 데이터 타입을 가지고 와야 하는데
+어떻게 가지고 올 수 있을까?  
+> 모든 컨테이너는 자신이 저장하는 타입이 있음. 그 타입을 value_type이라는 이름으로 알려준다.
+
+
+> stl에서는 아래와 같이 'value_type'을 사용하고 있음
+
+``` cpp
+template<typename T, typename Ax = Allocator<T>> class list {
+	public:
+	typedef T value_type; // typename T가 value_type으로 선언
+};
+
+list<int> s = {1,2,3};
+list<int>::value_type n = s.front(); // 여기서 value_type은 int 가 되는 것임
+```
+
+그래서 위에 어떻게 처리할 지 모르는 부분을 이렇게 할 수 있음
+``` cpp
+template<typename T>
+void print_first_element(T& v)
+{
+    T::value_type n  = v.front();
+    cout<<n<<endl;
+}
+```
+그런데 컴파일 하면 에러 나옴, 그래서 위에서 나온 'typename'을 붙여 줘야 함
+
+``` bash
+dependent-name T:: value_type is parsed as a non-type, but instantiation yields a type
+say 'typename T:: value_type' if a type is meant|
+```
+결국 이렇게, 'typename T::value_type n = v.front()'
+
