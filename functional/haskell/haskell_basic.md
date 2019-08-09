@@ -224,3 +224,184 @@ zero = 1
 -- 값을 binding하면 변경할 수 없음
 --zero = 2
 ```
+
+
+#### 리스트 타입
+
+같은 타입의 값을 여러개 보관하기 위해서 사용하는데, 다만 같은 타입만 보관할 수 있다.
+
+요소의 타입이 같으면 , 두개는 같은 타입
+``` haskell
+Prelude> :t [1,2]
+[1,2] :: Num a => [a]
+Prelude> :t [1,2,3]
+[1,2,3] :: Num a => [a]
+```
+
+"abc"와 ['a','b'] 둘다 Char의 리스트 타입임. 결국 문자열은 Char의 리스트란 의미
+``` haskell
+Prelude> :t "abc"
+"abc" :: [Char]
+Prelude> :t ['a','b']
+['a','b'] :: [Char]
+```
+
+##### 리스트의 리스트
+
+리스트는 같은 타입만 포함 할 수 있음
+
+``` haskell
+Prelude> :t [[1,2],[2,3,4]]
+[[1,2],[2,3,4]] :: Num a => [[a]]
+```
+* Data.List 모듈
+``` haskell
+import Data.List
+sort [1,3,6,4,2,4,6,8]
+```
+
+#### 리스트를 만드는 방법
+
+``` haskell
+Prelude> replicate 5 1
+[1,1,1,1,1]
+
+Prelude> replicate 5 [1,2]
+[[1,2],[1,2],[1,2],[1,2],[1,2]]
+
+-- 무한한 리스트 중 3개를 뽑아서.
+Prelude> take 3 ( repeat 1)
+[1,1,1]
+
+-- cycle 쓰는것
+Prelude> take 5 (cycle [1,2])
+[1,2,1,2,1]
+
+-- repeat (cycle과 비교)
+Prelude> take 5 (repeat [1,2])
+[[1,2],[1,2],[1,2],[1,2],[1,2]]
+
+-- range 사용하기
+Prelude> [1..10]
+[1,2,3,4,5,6,7,8,9,10]
+
+Prelude> ['a'..'b']
+"ab"
+
+Prelude> [1,3..10]
+[1,3,5,7,9]
+
+Prelude> [10..1]
+[]
+
+Prelude> [10,9..1]
+[10,9,8,7,6,5,4,3,2,1]
+```
+
+#### List comprehension
+> list로 부터 새로운 list를 만드는 표현식인데, generator 와 predicator를 사용해서 새로운 리스트를 생성
+
+``` haskell
+Prelude> [x*2 | x <-[1..5]]
+[2,4,6,8,10]
+```
+여기서 ` x<-[1..5]` 를 generator라고 부름
+
+``` haskell
+Prelude> [ [x,y] | x<- [1,2], y<-[10,20,30]]
+[[1,10],[1,20],[1,30],[2,10],[2,20],[2,30]]
+```
+generator를 두개 사용하면 중첩된 루프와 같이 나옴.
+
+``` haskell
+Prelude> [ [x,y] |  y<-[10,20,30], x<-[1,2]]
+[[1,10],[2,10],[1,20],[2,20],[1,30],[2,30]]
+
+Prelude> [ [x,y] | x<-[1,2,3], y<-[1..x]]
+[[1,1],[2,1],[2,2],[3,1],[3,2],[3,3]]
+```
+
+`predicator`는 조건자로 불리는데,
+``` haskell
+Prelude> [x*2 | x<-[1..10]]
+[2,4,6,8,10,12,14,16,18,20]
+
+Prelude> [x*2 | x<-[1..10], x> 5]
+[12,14,16,18,20]
+
+Prelude> [x*2 | x<-[1..10], x> 5, even x]
+[12,16,20]
+
+-- x + y가 짝수이면서 y 가 10이 아닌 경우
+Prelude> [ x + y | x <-[1..3], y<-[10,20], even(x+y), y /= 10]
+[22]
+```
+
+##### 예제
+인자로 전달된 문자열에서 소문자를 제거하는 함수
+
+``` haskell
+-- 함수를 선언 부 없이 곧바로 구현부를 만들 었음
+Prelude> removeLower ss = [ c | c <-ss, elem c ['A'..'Z']]
+
+Prelude> removeLower "AaB"
+"AB"
+-- 타입을 확인해 보면, 컴파일러가 아래처럼 만들어 줬음
+Prelude> :t removeLower
+removeLower :: [Char] -> [Char]
+```
+ 
+list의 길이를 구하는 함수
+``` haskell
+-- 이렇게 하면 리스트에서 하나씩 꺼내서 합을 구하는데,
+Prelude> size xs = sum [ x | x<-xs]
+Prelude> size [1,2,3]
+6
+
+-- 하나씩 꺼내지만, 1을 반환
+Prelude> size xs = sum [ 1 | x<-xs]
+Prelude> size [1,2,3]
+3
+
+-- 굳이 변수를 사용하지 않고, placeholder를 사용할 수도 있음
+Prelude> size xs = sum [ 1 | _ <-xs]
+Prelude> size [1,2,3]
+3
+```
+
+### tuple
+
+리스트와는 다르게 서로 다른 타입을 보관할 수 있음
+``` haskell
+Prelude> :t (1,2)
+(1,2) :: (Num a, Num b) => (a, b)
+Prelude> :t (1,'a')
+(1,'a') :: Num a => (a, Char)
+```
+
+그런데 요소의 타입이 다르거나, 개수가 다르면 서로 다른 타입임.
+``` haskell
+Prelude> [ (1,1), (2,2), (3,3,3)]
+
+<interactive>:58:17: error:
+    ? Couldn't match expected type ‘(a, b)’
+                  with actual type ‘(Integer, Integer, Integer)’
+    ? In the expression: (3, 3, 3)
+      In the expression: [(1, 1), (2, 2), (3, 3, 3)]
+      In an equation for ‘it’: it = [(1, 1), (2, 2), (3, 3, 3)]
+    ? Relevant bindings include
+        it :: [(a, b)] (bound at <interactive>:58:1)
+
+-- 하지만 리스트는 에러가 발생하지 않음
+Prelude> [ [1,1], [2,2], [3,3,3]]
+[[1,1],[2,2],[3,3,3]]
+```
+#### zip
+list를 두개 받아서 tuple의 list를 생성하는 함수. 만약 list의 길이가 다르다면 필요한 요소만 사용하고 나머지는 무시함
+``` haskell
+Prelude> zip [1,2,3] ['A','B','C']
+[(1,'A'),(2,'B'),(3,'C')]
+
+Prelude> zip [1,2,3] ['A','B','C','D','E','F']
+[(1,'A'),(2,'B'),(3,'C')]
+```
