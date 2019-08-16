@@ -306,3 +306,253 @@ applyTwice에 함수를 전달하는 3가지 방법
 20
 *Main>
 ```
+
+
+### zipWith
+
+`zipWith` 함수는   
+입력: 이항함수, 리스트, 리스트  
+출력: 리스트
+
+``` haskell
+Prelude> :t zipWith
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+Prelude> zipWith (+) [1,2,3][4,5,6]
+[5,7,9]
+```
+
+좀더 심화한 예제
+``` haskell
+
+r1 = zipWith (*)[1,2,3,4][5,6,7,8]
+
+r2 = zipWith max [1,8,9,3][2,3,7,8]
+
+r3 = zipWith (++) ["A","B","C"]["A","B","C"]
+
+r4 = zipWith (*) (replicate 3 1) [1..]
+
+
+-- zipWith : 인자가 3개인 함수
+-- zipWith (+) : 인자가 2개인 함수, 인자는 리스트 2개
+-- 인자로 전달된 2개의 리스트를 더하는 작업
+r5 = zipWith (+) [1,2,3,4][5,6,7,8]
+
+r6 = zipWith (zipWith (+)) [ [1,2],[3,4],[5,6]][[10,20],[30,40]]
+
+Prelude> :l func_2_7.hs
+[1 of 1] Compiling Main             ( func_2_7.hs, interpreted )
+Ok, one module loaded.
+*Main> r1
+[5,12,21,32]
+*Main> r2
+[2,8,9,8]
+*Main> r3
+["AA","BB","CC"]
+*Main> r3
+["AA","BB","CC"]
+*Main> r4
+[1,2,3]
+*Main> r5
+[6,8,10,12]
+*Main> r6
+[[11,22],[33,44]]
+```
+
+zipWith를 구현해 보면
+
+``` haskell
+myzipWith ::(a->b->c)->[a]->[b]->[c]
+-- 입력 중 빈 리스트가 오면 무시
+myzipWith _ [] _ = []
+ -- 입력 중 빈 리스트가 오면 무시 
+myzipWith _ _ [] = []
+-- 입력 받을 때는 패턴 매칭을 써야 함
+myzipWith f (x:xs) (y:ys) = f x y : myzipWith f xs ys
+```
+
+### flip
+
+이항 함수의 인자의 순서를 바꾸어서 새로운 함수를 반환
+
+``` haskell
+*Main> :t flip
+flip :: (a -> b -> c) -> b -> a -> c
+*Main> (-) 5 3
+2
+*Main> flip (-) 5 3
+-2
+*Main> zip [1,2,3][10,20,30]
+[(1,10),(2,20),(3,30)]
+*Main> flip zip [1,2,3][10,20,30]
+[(10,1),(20,2),(30,3)]
+```
+
+flip을 만들어 보면
+``` haskell
+
+-- 함수를 입력 받아서 함수를 반환한다는 개념
+myflip ::(a->b->c) -> (b->a->c)
+myflip f = g
+  where g x y = f y x
+
+-- 이항인자, 값, 값
+-- myflip (-) 5 3
+-- 함수와 두개의 값을 입력 받는 다는 가정으로
+myflip2 :: (a->b->c)->b->a->c
+myflip2 f x y = f y x
+```
+이렇게 `g x y = f y x` 로 새로운 함수를 만들어서 구현할 수 있음, 아니면 함수와 두개의 인자를 받는다는
+
+### map
+``` haskell
+*Main> :t map
+map :: (a -> b) -> [a] -> [b]
+*Main>
+*Main> map (+3) [1,2,3]
+[4,5,6]
+
+
+r11 = map (+3) [1,2,3]
+r12 = map ("Hi" ++ ) ["kim","Lee","Park"]
+r13 = map fst [(1,2),(3,4),(5,6)]
+r14 = map (replicate 3)[3..6]
+r15 = map head [[1,2],[3,4],[5,6]]
+
+-- map : 인자가 2개 (함수와 리스트)
+-- map (*2) : 인자가 한개.리스트
+--          : 인자로 전달된 리스트의 각 요소의 값을 2배로
+r16 = map (map(*2)) [[1,2],[3,4],[5,6]]
+
+*Main> r11
+[4,5,6]
+*Main> r12
+["Hikim","HiLee","HiPark"]
+*Main> r14
+[[3,3,3],[4,4,4],[5,5,5],[6,6,6]]
+*Main> r13
+[1,3,5]
+*Main> r15
+[1,3,5]
+*Main> r16
+[[2,4],[6,8],[10,12]]
+*Main>
+```
+
+### Filter
+
+리스트의 요소 중 조건자(predicator)를 만족하는 요소만을 가진 새로운 리스트를 반환
+
+``` haskell
+*Main> :t filter
+filter :: (a -> Bool) -> [a] -> [a]
+*Main> filter even [1..10]
+[2,4,6,8,10]
+```
+
+``` haskel
+
+r21 = filter ( <10 ) (filter even[1..20])
+
+r22 = [ x | x <- [1..20], even x, x < 10]
+
+r23 = filter (`elem`['a' ..'z']) "I am a boy"
+
+-- r24 = filter (`mod` 3) [1..3]
+
+r24 = filter (\x->if x `mod` 3 == 0 then True else False) [1..100]
+
+*Main> r21
+[2,4,6,8]
+*Main> r22
+[2,4,6,8]
+*Main> r23
+"amaboy"
+*Main> r24
+[3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63,66,69,72,75,78,81,8
+4,87,90,93,96,99]
+```
+
+직업 만들어 보면
+``` haskell
+
+myfilter ::(a->Bool) ->[a]->[a]
+myfilter _ [] = []
+myfilter p (x:xs)
+ | p x = x : myfilter p xs
+ | otherwise = myfilter p xs
+```
+
+
+### Fold
+리스트의 모든 요소에 순서대로 이항 함수를 적용
+``` haskell
+foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+r31 = foldl (+) 0 [1,2,3]  -- (((0+1) + 2 ) + 3)
+r32 = foldr (+) 0 [1,2,3]  -- (1 + (2 + (3 + 0)))
+
+r33 = foldl1 (+) [1,2,3] -- ((1+2)+3)
+r34 = foldr1 (+) [1,2,3] -- (1+(2+3))
+-- 1:[] => [1] => 2:[1] => [2,1] => [3,2,1]
+r35 = foldl(\x y ->y:x)[][1,2,3] 
+*Main> r31
+6
+*Main> r32
+6
+*Main> r33
+6
+*Main> r34
+6
+*Main> r35
+[3,2,1]
+```
+
+
+### 함수 적용 연산자 '$'
+
+함수에 인자를 적용하는 방법  
+공백 : 우선 순위가 높음
+$ : 우선 순위가 낮음
+``` haskell
+*Main> succ$1
+2
+*Main> succ max 5 3
+
+<interactive>:70:1: error:
+    ? Non type-variable argument in the constraint: Enum (a -> a -> a)
+      (Use FlexibleContexts to permit this)
+    ? When checking the inferred type
+        it :: forall a. (Enum (a -> a -> a), Ord a, Num a) => a
+*Main> succ$max 5 3
+6
+*Main> succ(max 5 3)
+6
+```
+### 함수 합성
+함수 결과 값을 다른 함수의 입력으로 바로 전달
+``` haskell
+*Main> negate $succ 4
+-5
+*Main> negate (succ 3)
+-4
+
+-- a 가 입력되어 b가 반환되고 b가 입력되어 c가 리턴되는 함수
+*Main> :t (.)
+(.) :: (b -> c) -> (a -> b) -> a -> c
+*Main> (negate . succ ) 3
+-4
+*Main> ( (min 5) . negate .succ)3
+-4
+```
+
+리스트에 있는 모든 요소를 음수로 변경 후,리스트의 합을 구하고 싶다
+``` haskell
+-- [1,-2,-3,4,-5]
+--r1 = map negate [1,-2,-3,4,-5]
+r2 = map (negate .abs) [1,-2,-3,4,-5]
+r3 = sum $ map (negate .abs ) [1,-2,-3,4,-5]
+*Main> r2
+[-1,-2,-3,-4,-5]
+*Main> r3
+-15
+```
