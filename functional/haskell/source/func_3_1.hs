@@ -33,3 +33,18 @@ convert :: Meter -> Yard
 
 -- convert m = m * 1.093613
 convert (Meter m) = Yard (m * 1.093613)
+
+
+-- newtype Point = Point Double Double
+data Point = Point Double Double deriving (Show, Eq)
+
+data Shape = Circle Double Double Double | Rectangle Double Double Double Double deriving Show
+
+-- 면적을 구하는 함수
+
+-- area (Circle (Point 1 1 ) 5)
+-- area (Rectange(Point 1 1) (Point 10 10))
+
+area::Shape->Double
+area (Circle _ _ r) = 3.14 * r ^ 2
+area (Rectangle (Point x1 y1) (Point x2 y2)) =  (x2 -x1 )*( y2-y1)

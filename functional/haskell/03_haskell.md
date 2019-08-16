@@ -86,3 +86,45 @@ convert (Meter m) = Yard (m * 1.093613)
 *Main> convert (Meter 1)
 1.093613 yd
 ```
+
+### 완전히 새로운 타입 만들기
+
+``` haskell
+-- 점을 나타내는 Point 타입
+newtype Point = Point Double Double
+-- 실행하면 아래와 같이 생성하는 하나의 필드만 있어야 한다고 에러가 나옴
+func_3_1.hs:38:17: error:
+    ? The constructor of a newtype must have exactly one field
+        but ‘Point’ has two
+    ? In the definition of data constructor ‘Point’
+      In the newtype declaration for ‘Point’
+   |
+38 | newtype Point = Point Double Double
+```
+
+`data`라는 키워드를 사용하면 됨
+``` haskell
+data Point = Point Double Double deriving (Show, Eq)
+Point :: Double -> Double -> Point
+*Main> Point 1 1
+Point 1.0 1.0
+*Main> (Point 1 1) == (Point 0 0)
+False
+```
+
+여러개를 같이 만들 수도 있음
+``` haskell
+data Shape = Circle Double Double Double | Rectangle Double Double Double Double deriving Show
+
+*Main> :t Circle
+Circle :: Double -> Double -> Double -> Shape
+*Main> :t Rectangle
+Rectangle :: Double -> Double -> Double -> Double -> Shape
+*Main> Circle 1 1 4
+Circle 1.0 1.0 4.0
+*Main> Re
+Read       ReadS      Real       RealFloat  RealFrac   Rectangle
+*Main> Rectangle 1 2 3 4
+Rectangle 1.0 2.0 3.0 4.0
+*Main>
+```
