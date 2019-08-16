@@ -302,3 +302,135 @@ say 'typename T:: value_type' if a type is meant|
 ```
 결국 이렇게, 'typename T::value_type n = v.front()'
 
+
+### template
+
+``` cpp
+class Test
+{
+public:
+    template<typename T>static void f() {}
+    template<typename T>class Complex {};
+};
+
+template<typename T> void foo(T a)
+{
+    Test::f<int>(); //ok
+//    T::f<int>(); //error . 컴파일러가 `<`가 비교연산인지, 템플릿인지 모름
+    T::template f<int>(); //ok
+}
+int main()
+{
+    Test t;
+    foo(t);
+}
+```
+
+
+### template parameter
+
+
+template으로 전달되는 인자는
+
+1. type
+2. 값(non-type)
+3. template
+
+```cpp
+
+template<typename T, int N> struct Stack{
+    T buffer[N];
+};
+
+int main()
+{
+    Stack<int, 10> s;
+}
+```
+
+1. 정수형 상수를 전달할 수 있음(1), 단 변수는 안됨(2)
+2. enum 상수도 가능 (3)
+3. pointer도 가능하지만, reference의 경우 지역 변수의 주소이므로 불가능(4) . 하지만 전역 변수의 주소는 가능  
+   정확히는 지역 변수라기 보다는 no linkage를 가지는 변수 주소는 불가능
+4. 함수 포인터도 가능  
+
+```cpp
+template<int N> class Test1{};
+enum Color { red = 1, green =2};
+template<Color> class Test2 {};
+template<int*> class Test3 {};
+template<int(*)(void)> class Test4{};
+
+int x = 0;
+int main()
+{
+    int n = 10;
+    Test1<10> t1; //(1)
+    Test1<n> t1;  //(2)
+    Test2<red> t3; //(3)
+    Test<&n> t4; // (4)
+    Test<&x> t5;
+}
+```
+
+typeid를 통해 전달되는 type을 확인 할 수 있음
+``` cpp
+template<auto N>struct Test{
+    Test()
+    {
+        cout<<typeid(N).name()<<endl;
+    }
+};
+
+int x = 0;
+int main()
+{
+    Test<10> t1;
+    Test<&x> t2;
+    Test<&main> t3;
+}
+```
+
+``` cpp
+template<typename T>class List{};
+template<typename T, template<typename> class C> class Stack{
+	C c; //error
+	C<T> c; // ok. List<int> c;
+};
+
+int main()
+{
+    list s1; //error
+    List<int> s2;
+    Stack<int, List> s3;
+    // Stack의 첫번째는 타입인데, 두번째 인자는 템플릿임. 그래서
+    // List 가 아닌 List<int> 로 적으면 템플릿이 아닌 type이 됨.
+}
+```
+
+
+### variable template
+
+`constexpr`을 이용하여 define 대신 사용할 수가 있는데, 빌드해보면 T의 type이 서로 달라서 빌드 에러가 발생 함.
+
+``` cpp
+constexpr double pi = 3.14;
+template<typename T> void foo(T a, T b){ }
+
+int main()
+{
+    float f = 3.3;
+    foo(f,pi);
+}
+```
+
+그래서 pi = 3.14를 template으로 만들수가 있음
+``` cpp
+template<typename T> constexpr T pi = 3.14;
+template<typename T> void foo(T a, T b){ }
+int main()
+{
+    float f = 3.3;
+    foo(f,pi<float>);
+}
+```
