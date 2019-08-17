@@ -128,3 +128,156 @@ Read       ReadS      Real       RealFloat  RealFrac   Rectangle
 Rectangle 1.0 2.0 3.0 4.0
 *Main>
 ```
+
+
+### 레코드 구분
+
+새로운 데이터 타입을 만드는 기술
+
+``` haskell
+-- People 타입 : 이름, 나이, 주소
+data People = People String Int String deriving Show
+
+getName :: People -> String
+getName (People n _ _) = n 
+getAge :: People ->Int
+getAge (People _ a _ ) = a
+
+-- 사용할 때는 
+*Main> getName ( People "AA" 2 "seoul")
+"AA"
+*Main> getAge (People "AA" 3 "Busan")
+3
+```
+
+각 필드에 이름을 부여하는 것을 `레코드 구문`이라고 함
+``` haskell
+-- 이렇게 만들면 getter를 자동으로 만들어줌
+data People = People { name::String, 
+                       age ::Int, 
+                       addr::String } deriving Show
+*Main> name (People "Kim" 2 "seould")
+"Kim"
+*Main> age (People "Kim" 2 "seould")
+2                       
+```
+
+### 인자가 없는 값 생성
+
+생성자에 인자가 없는 경우는?
+
+``` haskell
+-- 인자가 있는 생성자
+data Shape = Circle Int Int Int | Rectangle Int Int Int Int
+
+-- Bool 의 경우 인자가 없는 True 생성자와 False 생성자가 있음
+-- data Bool = True | False
+-- 1주일을 표현하고 싶다
+data Week = Mon | Tue | Wed | Thu | Fri | Sat | Sun deriving (Show , Eq, Enum)
+*Main> succ Mon
+Tue
+```
+
+### 타입 생성자
+
+* 타입 생성자:타입을 인자로 받아서 새로운 타입을 만드는 생성자
+* 값 생성자  : 값을 인자로 받아서 해당 타입의 값을 만드는 생성자
+
+``` haskell
+--data Shape = Rectangle Int Int Int Int
+-- Int 뿐만 아니라 임의의 타입도 처리할 수 있도록
+data Shape a = Rectangle a a a a deriving Show
+-- 면적을 구하는 함수
+area :: Num a => Shape a -> a
+area (Rectangle x1 y1 x2 y2 ) = (x2-x1)*(y2-y1)
+*Main> area (Rectangle  1 1 10 10)
+81
+```
+
+### Maybe
+
+int 의 문제점 : 잘못된 값(값 없음)을 표현할 수 없다.
+``` cpp
+int foo() { return 실패;}
+
+template<typename T> struct Maybe {
+    bool b; // 유효성
+    T value;
+}
+Maybe<int> m ; int 를 보관하고 값 없음을 나타냄
+```
+
+``` haskell
+-- 값이 없으면 Nothing 그렇지 않으면 a
+data Maybe a = Nothing | Just a
+
+Prelude> :i Maybe
+data Maybe a = Nothing | Just a         -- Defined in ‘GHC.Base’
+instance Applicative Maybe -- Defined in ‘GHC.Base’
+instance Eq a => Eq (Maybe a) -- Defined in ‘GHC.Base’
+instance Functor Maybe -- Defined in ‘GHC.Base’
+instance Monad Maybe -- Defined in ‘GHC.Base’
+instance Semigroup a => Monoid (Maybe a) -- Defined in ‘GHC.Base’
+instance Ord a => Ord (Maybe a) -- Defined in ‘GHC.Base’
+instance Semigroup a => Semigroup (Maybe a)
+  -- Defined in ‘GHC.Base’
+instance Show a => Show (Maybe a) -- Defined in ‘GHC.Show’
+instance Read a => Read (Maybe a) -- Defined in ‘GHC.Read’
+instance Foldable Maybe -- Defined in ‘Data.Foldable’
+instance Traversable Maybe -- Defined in ‘Data.Traversable’
+Prelude>
+```
+
+예제를 보면 입력된 값이 5 이상이면 다음수를, 5 이하이면 실패를 반한
+
+``` haskell
+--data Maybe a = Nothing | Just a
+{-
+next ::Int->Int
+next x
+ | x > 5 = succ x
+ | otherwise = ?
+-}
+
+next::Int->Maybe Int
+next x
+ | x > 5 = Just (succ x)
+ | otherwise = Nothing;
+
+-- Maybe Int 를 받아서 Int를 반환
+getValue::Maybe Int->Int
+getValue (Just m) = m
+getValue Nothing = 0
+*Main> getValue (Just 8)
+8
+*Main> getValue Nothing
+0
+```
+
+### 재귀적인 데이터 구조
+#### List 만들기
+
+``` haskell
+data List = Empty | Node Int List deriving Show
+*Main> Empty
+Empty
+*Main> Node 10 Empty
+Node 10 Empty
+*Main> Node 20 (Node 10 Empty)
+Node 20 (Node 10 Empty)
+*Main> Node 30(Node 20 (Node 10 Empty))
+Node 30 (Node 20 (Node 10 Empty))
+data List a = Empty | Node a (List a)deriving Show
+```
+
+특수 문자로 생성자 만들기
+``` haskell
+-- Node => :+
+-- Node 10 Empty => 10 :+ Empty
+data List a = Empty | a:+(List a) deriving Show
+*Main> 10 :+ Empty
+10 :+ Empty
+*Main> 20 :+ (10 :+ Empty)
+20 :+ (10 :+ Empty)
+```
+다음 내용은 너무 어렵다
