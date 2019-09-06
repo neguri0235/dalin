@@ -8,6 +8,15 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Add("Set-Cookie", "VISIT=TRUE")
+
+	if _, ok := r.Header["Cookie"]; ok {
+		fmt.Fprintf(w, "<html><body> Already Visited </body></html>\n")
+	}else{
+		fmt.Fprintf(w, "<html><body> First Visit </body></html>\n")
+	}
+
 	dump, err := httputil.DumpRequest(r, true)
 
 	if err != nil {
