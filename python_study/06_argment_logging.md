@@ -242,13 +242,10 @@ elif args.verbosity >= 1:
 else:
     print(answer)
 ```	
-
-결과는 예상한 대로
-``` bash
 #### 조금 더 발전 시키기
 
 argument 를 여러개 받을 수 있다면,
-```
+``` python
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("x", type=int, help="the base")
