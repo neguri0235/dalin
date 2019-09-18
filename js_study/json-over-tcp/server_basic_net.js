@@ -1,10 +1,8 @@
-var net = require('json-over-tcp');
+var net = require('net');
 
 var PORT = 18888;
-//var msg = 'will you be okay?';
-var msg = { ack : 'file' , filename : '001.jpg' };
-var server = net.createServer(); 
-server.on('connection', function ( client_socket ) { 
+var msg = 'will you be okay?';
+var server = net.createServer( function ( client_socket ) { 
 
 	console.log('client connected >> '  + client_socket.remoteAddress +':'+ client_socket.remotePort);
 	client_socket.setNoDelay(true);
@@ -14,14 +12,12 @@ server.on('connection', function ( client_socket ) {
 	});
 
 	client_socket.on('data', function (data) {
-		console.log('client received data >> %s:%s [%j]', client_socket.remoteAddress, client_socket.remotePort , data );		
-
+		console.log('client received data >> '  + client_socket._peername.address +':'+ client_socket._peername.port + ' [' + data + ']' );	
 		client_socket.write(msg);
 	});
 
 	client_socket.on('end', function () {
-		console.log('client received end >> ' );	
-
+		console.log('client received end >> '  + client_socket._peername.address +':'+ client_socket._peername.port );	
 	});
 
 	client_socket.on('error', function (error) {

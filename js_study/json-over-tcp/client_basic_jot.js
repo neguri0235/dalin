@@ -4,6 +4,8 @@ var PORT = 18888;
 
 var socket  = new net.Socket();
 //var msg = 'Hey! TCP server.';
+// tcp 로 보내게 되면 값이 binary 형태로 전달 되는데, 
+// jason-over-tcp에서는 json 형태로 전달된다.
 var msg = { req : 'file' , format : 'jpg' };
 socket.setNoDelay(true);
 socket.connect(PORT, HOST, function() {
@@ -39,5 +41,4 @@ socket.connect(PORT, HOST, function() {
 	socket.write(msg);
 	console.log( 'client send data [%j] ', msg );
 	socket.end();
-
 });
