@@ -1,31 +1,31 @@
 검색
 
-
+``` 
 SELECT * FROM sample25 WHERE text LIKE '%SQL%";
 SELECT * FROM sample25 WHERE text LIKE 'SQL%"; // -> '전방일치'라고 부름
 SELECT * FROM sample25 WHERE text LIKE '%SQL"; // -> '후방일치'라고 부름
-
+```
 
 %를 검색하고자 할 때, \ 를 사용, 좀더 복잡한 것을 검색하고자 할때는 정규표현식 사용을 권장
-
+```
 SELECT * FROM sample25 WHERE text LIKE '%\%%';
-
+```
 
 정렬
 
-
+```
 SELECT * FROM sample31 ORDER BY age;   // age로 정렬
 SELECT * FROM sample31 ORDER BY age DESC; // 내림 차순 정렬
 SELECT * FROM sample31 ORDER BY age ASC;  // 오름 차순 정렬
-
+```
 
 복수열 정렬 할때
 
 
-
+```
 SELECT * FROM sample32 ORDER BY a; // a 로만 정렬
 SELECT * FROM sample32 ORDER BY a , b // a 로 정렬 후 b 로도 정렬
-
+```
 
 
 
@@ -36,21 +36,21 @@ database에 NULL 이 있으면 가장 작은 값으로 처리되서 , DESC로 �
 
 결과 제한 하기
 LIMIT 이란게 있는데 SQL 표준은 아니고, MySQL 하고 PostgreSQL에서 사용할 수 있음
-
+```
 SELECT * FROM sample33 LIMIT 3;
-
+```
 
 정렬하고 출력의 개수를 제한 할 수 도 있음
-
+```
 SELECT * FROM sample33 ORDER BY no DESC LIMIT 3;
 SELECT * FROM sample33 LIMIT 3 OFFSET 3;
-
+```
 
 수치연산
 
 
 이런 데이터가 있을 때, price x quantity 를 계산한 결과가 필요한 경우
-
+```
 mysql> select * from sample34;
 +------+-------+----------+
 | no | price | quantity |
@@ -60,9 +60,9 @@ mysql> select * from sample34;
 | 3 | 1980 | 1 |
 +------+-------+----------+
 3 rows in set (0.00 sec)
+```
 
-
-
+```
 SELECT *, price * quantity FROM sample34;
 mysql> 
 +------+-------+----------+------------------+
@@ -72,11 +72,12 @@ mysql>
 | 2 | 230 | 24 | 5520 |
 | 3 | 1980 | 1 | 1980 |
 +------+-------+----------+------------------+
-
+```
 
 
 AS를 붙여서 별명을 만들 수도 있음
 
+```
 SELECT *, price * quantity AS amount FROM sample34;
 mysql> select *, price * quantity AS amount from sample34;
 +------+-------+----------+--------+
@@ -86,11 +87,12 @@ mysql> select *, price * quantity AS amount from sample34;
 | 2 | 230 | 24 | 5520 |
 | 3 | 1980 | 1 | 1980 |
 +------+-------+----------+--------+
-
+```
 
 
 결과 계산한 이후에 WHERE 사용하기
 
+```
 SELECT *, price * quantity AS amount FROM sample34 WHERE price * quantity >= 2000;
 
 +------+-------+----------+--------+
@@ -99,11 +101,12 @@ SELECT *, price * quantity AS amount FROM sample34 WHERE price * quantity >= 200
 | 2 | 230 | 24 | 5520 |
 +------+-------+----------+--------+
 1 row in set (0.00 sec)
-
+```
 
 
 정렬도 할 수 있다
 
+```
 mysql> SELECT *, price * quantity AS amount FROM sample34 ORDER BY price*quantity DESC;
 
 +------+-------+----------+--------+
@@ -114,11 +117,12 @@ mysql> SELECT *, price * quantity AS amount FROM sample34 ORDER BY price*quantit
 | 1 | 100 | 10 | 1000 |
 +------+-------+----------+--------+
 3 rows in set (0.00 sec)
-
+```
 
 
 Alias를 이용해서 정렬도 가능
 
+```
 mysql> SELECT *, price * quantity AS amount FROM sample34 ORDER BY amount DESC;
 
 
@@ -130,11 +134,11 @@ mysql> SELECT *, price * quantity AS amount FROM sample34 ORDER BY amount DESC;
 | 1 | 100 | 10 | 1000 |
 +------+-------+----------+--------+
 3 rows in set (0.00 sec)
-
+```
 
 
 반올림하기 (ROUND 함수를 사용하면됨)
-
+```
 mysql> SELECT amount, ROUND(amount) FROM sample341;
 
 +---------+---------------+
@@ -145,9 +149,9 @@ mysql> SELECT amount, ROUND(amount) FROM sample341;
 | 1080.00 | 1080 |
 +---------+---------------+
 3 rows in set (0.00 sec)
+```
 
-
-
+```
 mysql> SELECT *, ROUND(amount) FROM sample341;
 +---------+---------------+
 | amount | ROUND(amount) |
@@ -157,9 +161,9 @@ mysql> SELECT *, ROUND(amount) FROM sample341;
 | 1080.00 | 1080 |
 +---------+---------------+
 3 rows in set (0.00 sec)
+```
 
-
-
+```
 mysql> SELECT ROUND(amount) FROM sample341;
 +---------------+
 | ROUND(amount) |
@@ -169,11 +173,11 @@ mysql> SELECT ROUND(amount) FROM sample341;
 | 1080 |
 +---------------+
 3 rows in set (0.00 sec)
-
+```
 
 
 소수점 아래 몇자리까지 사용할 것인지 결정
-
+```
 mysql> SELECT amount, ROUND(amount, 1) FROM sample341;
 +---------+------------------+
 | amount | ROUND(amount, 1) |
@@ -183,11 +187,12 @@ mysql> SELECT amount, ROUND(amount, 1) FROM sample341;
 | 1080.00 | 1080.0 |
 +---------+------------------+
 3 rows in set (0.00 sec)
-
+```
 
 
 10자리 크기로 반올림 할때는 - 를 붙여서 사용
 
+```
 mysql> SELECT amount, ROUND(amount, -2) FROM sample341;
 +---------+-------------------+
 | amount | ROUND(amount, -2) |
@@ -197,12 +202,12 @@ mysql> SELECT amount, ROUND(amount, -2) FROM sample341;
 | 1080.00 | 1100 |
 +---------+-------------------+
 3 rows in set (0.00 sec)
-
+```
 
 
 문자열 연산
 
-
+```
 mysql> SELECT * FROM sample35;
 +------+-------+----------+------+
 | no | price | quantity | unit |
@@ -212,11 +217,11 @@ mysql> SELECT * FROM sample35;
 | 3 | 1980 | 1 | 장 |
 +------+-------+----------+------+
 3 rows in set (0.00 sec)
-
+```
 
 
 10, 24, 1은 수치형인데, unit의 문자열과 결합이 가능함. 
-
+```
 mysql> SELECT CONCAT(quantity, unit) FROM sample35;
 +------------------------+
 | CONCAT(quantity, unit) |
@@ -226,7 +231,7 @@ mysql> SELECT CONCAT(quantity, unit) FROM sample35;
 | 1장 |
 +------------------------+
 3 rows in set (0.00 sec)
-
+```
 
 
 그 외에 , SUBSTRING, TRIM, CHARACTER_LENGTH 함수같은 것이 있음
@@ -235,7 +240,7 @@ mysql> SELECT CONCAT(quantity, unit) FROM sample35;
 
 날짜 연산
 함수만 실행힐 수도 있는데, SELECT 뒤에 함수를 적어주면 됨, current_timestamp 도 함수인데, 인수를 전달할 필요가 없어서 괄호를 사용하지 않음.
-
+```
 mysql> SELECT CURRENT_TIMESTAMP;
 
 +---------------------+
@@ -244,11 +249,11 @@ mysql> SELECT CURRENT_TIMESTAMP;
 | 2020-03-11 08:41:58 |
 +---------------------+
 1 row in set (0.00 sec)
-
+```
 
 
 며칠 후 계산
-
+```
 mysql> SELECT CURRENT_DATE + INTERVAL 1 DAY;
 
 +-------------------------------+
@@ -257,11 +262,11 @@ mysql> SELECT CURRENT_DATE + INTERVAL 1 DAY;
 | 2020-03-12 |
 +-------------------------------+
 1 row in set (0.00 sec)
-
+```
 
 
 며칠 후 계산. 
-
+```
 mysql> SELECT CURRENT_DATE + INTERVAL 2 DAY;
 +-------------------------------+
 | CURRENT_DATE + INTERVAL 2 DAY |
@@ -271,13 +276,13 @@ mysql> SELECT CURRENT_DATE + INTERVAL 2 DAY;
 1 row in set (0.00 sec)
 
 mysql>
-
+```
 
 
 날짜간 뺄셈. 특정일 사이 며칠이 흘렀는지 확인
 
 
-
+```
 mysql> SELECT DATEDIFF('2020-03-11', '2020-02-04');
 +--------------------------------------+]
 | DATEDIFF('2020-03-11', '2020-02-04') |
@@ -296,7 +301,7 @@ CASE 문으로 데이터 변환하기
 sample37을 보면 NULL이란 값이 들어 있는데, NULL을 0으로 변환하고자 함
 
 
-
+```
 mysql> SELECT * FROM sample37;
 
 +------+
@@ -320,11 +325,11 @@ mysql> SELECT a, CASE WHEN a IS NULL THEN 0 ELSE a END AS conv FROM sample37;
 | NULL | 0 |
 +------+------+
 3 rows in set (0.00 sec)
-
+```
 
 
 단순히 NULL을 0으로 바꾸는 목적이라면 COALACE를 사용할 수도 있다
-
+```
 mysql> SELECT a, COALESCE (a, 0) FROM sample37;
 
 +------+-----------------+
@@ -335,11 +340,11 @@ mysql> SELECT a, COALESCE (a, 0) FROM sample37;
 | NULL | 0 |
 +------+-----------------+
 3 rows in set (0.00 sec)
-
+```
 
 
 CASE, WHEN을 다중으로 사용하여 인코딩과 디코딩을 할 수 있음
-
+```
 mysql> SELECT a AS "코드",
 -> CASE
 -> WHEN a = 1 THEN '남자'
@@ -355,11 +360,11 @@ mysql> SELECT a AS "코드",
 | NULL | 미지정 |
 +--------+-----------+
 3 rows in set (0.00 sec)
-
+```
 
 
 case뒤에 비교할 대상을 직접 넣을 수도 있음.
-
+```
 mysql> SELECT a AS "코드",
 -> CASE a
 -> WHEN 1 THEN '남자'
@@ -377,12 +382,12 @@ mysql> SELECT a AS "코드",
 3 rows in set (0.00 sec)
 
 mysql>
-
+```
 
 
 행 추가하기 - INSERT
 
-
+```
 mysql> SELECT * FROM sample41;
 Empty set (0.00 sec)
 
@@ -395,21 +400,18 @@ mysql> desc sample41;
 | b | date | YES | | NULL | |
 +-------+-------------+------+-----+---------+-------+
 3 rows in set (0.00 sec)
-
+```
 
 
 새로운 행을 추가함.
-
+```
 mysql> INSERT INTO sample41 VALUES(1,'ABC','2014-01-25');
-
-
-
 Query OK, 1 row affected (0.01 sec)
-
+```
 
 
 추가한 다음에 결과를 보면 다음과 같음. 
-
+```
 mysql> SELECT * FROM sample41;
 
 +----+------+------------+
@@ -418,17 +420,17 @@ mysql> SELECT * FROM sample41;
 | 1 | ABC | 2014-01-25 |
 +----+------+------------+
 1 row in set (0.00 sec)
-
+```
 
 
 한행을 추가할때, 전체를 넣지 않고 특정 열만 선택해서 넣을 수도 있음
-
+```
 mysql> INSERT INTO sample41(a,no) VALUES('XYZ',2);
-
+```
 
 결과를 보면 b 열은 NULL로 들어가 있음
 
-
+```
 Query OK, 1 row affected (0.01 sec)
 
 mysql> SELECT * FROM sample41;
@@ -439,21 +441,21 @@ mysql> SELECT * FROM sample41;
 | 2 | XYZ | NULL |
 +----+------+------------+
 2 rows in set (0.00 sec)
-
+```
 
 
 모든 열을 NULL로 채우고 싶은 경우, 
-
+```
 mysql> INSERT INTO sample41(no, a, b) VALUES(NULL, NULL, NULL);
-
+```
 
 그런데 이렇게 하면 에러가 발생한다. 
 
-
+```
 ERROR 1048 (23000): Column 'no' cannot be null
-
+```
 description을 보면 속성에 NOT NULL로 되어 있다. 그래서 NULL이 입력이 안된다. 
-
+```
 mysql> desc sample41;
 +-------+-------------+------+-----+---------+-------+
 | Field | Type | Null | Key | Default | Extra |
@@ -465,7 +467,7 @@ mysql> desc sample41;
 3 rows in set (0.00 sec)
 
 mysql>
-
+```
 
 
 Default 값이 정의 되어 있는 경우, 
@@ -473,7 +475,7 @@ Default 값이 정의 되어 있는 경우,
 
 
 description을 보면, d 열이 0 으로 설정되어 있음. 
-
+```
 mysql> DESC sample411;
 +-------+---------+------+-----+---------+-------+
 | Field | Type | Null | Key | Default | Extra |
@@ -482,11 +484,11 @@ mysql> DESC sample411;
 | d | int(11) | YES | | 0 | |
 +-------+---------+------+-----+---------+-------+
 2 rows in set (0.00 sec)
-
+```
 
 
 그래서 명시적으로 d 열에 DEFAULT 를 넣어 주면, default로 설정된 0 이 들어가 있음을 확인할 수 있음. 
-
+```
 mysql> INSERT INTO sample411(no, d) VALUES(2, DEFAULT);
 
 Query OK, 1 row affected (0.01 sec)
@@ -499,13 +501,13 @@ mysql> SELECT * FROM sample411;
 | 2 | 0 |
 +----+------+
 2 rows in set (0.00 sec)
-
+```
 
 
 위는 명시적으로 DEFAULT를 넣은 것이고, 암묵적으로 넣을 수도 있음.
 
 DEFAULT 라고 넣어주지 않았음에도, DEFAULT값이 들어가 있음. 
-
+```
 mysql> INSERT INTO sample411(no) VALUES(3);
 
 Query OK, 1 row affected (0.00 sec)
@@ -519,12 +521,12 @@ mysql> SELECT * FROM sample411;
 | 3 | 0 |
 +----+------+
 3 rows in set (0.00 sec)
-
+```
 
 
 삭제하기
 
-
+```
 mysql> SELECT * FROM sample41;
 +----+------+------------+
 | no | a | b |
@@ -535,17 +537,16 @@ mysql> SELECT * FROM sample41;
 +----+------+------------+
 3 rows in set (0.00 sec)
 
-
-
 mysql> DELETE FROM sample41 WHERE no = 3;
 Query OK, 1 row affected (0.00 sec)
+```
 
 
 
 DELETE FROM을 사용해서 삭제함. 
 
 
-
+```
 mysql> SELECT * FROM sample41;
 +----+------+------------+
 | no | a | b |
@@ -554,7 +555,7 @@ mysql> SELECT * FROM sample41;
 | 2 | XYZ | NULL |
 +----+------+------------+
 2 rows in set (0.00 sec)
-
+```
 
 
 데이터 갱신하기 - UPDATE
@@ -563,7 +564,7 @@ mysql> SELECT * FROM sample41;
 no =2 의 값을 보면 날짜가 NULL로 되어 있음. 
 
 
-
+```
 mysql> SELECT * FROM sample41 order by no;
 +----+------+------------+
 | no | a | b |
@@ -572,7 +573,7 @@ mysql> SELECT * FROM sample41 order by no;
 | 2 | XYZ | NULL |
 +----+------+------------+
 2 rows in set (0.00 sec)
-
+```
 
 
 no=2 에 대해서 날짜를 입력하면,
@@ -582,8 +583,9 @@ mysql> UPDATE sample41 SET b = '2014-09-04' WHERE no=2;
 Query OK, 1 row affected (0.01 sec)
 Rows matched: 1 Changed: 1 Warnings: 0
 
-아래처럼 날짜기 입력된 것을 확인할 \
+아래처럼 날짜기 입력된 것을 확인할 
 
+``` 
 mysql> SELECT * FROM sample41 order by no;
 +----+------+------------+
 | no | a | b |
@@ -592,15 +594,11 @@ mysql> SELECT * FROM sample41 order by no;
 | 2 | XYZ | 2014-09-04 |
 +----+------+------------+
 2 rows in set (0.01 sec)
-
-mysql>
-
-
+```
 
 
 
 복수열도 갱신할 수 있다.  (하나의 행에 대해서 여러 값을 변경하는 것)
-
 
 
 행 개수 구하기 - COUNT

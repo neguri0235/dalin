@@ -10,3 +10,4 @@
 * 자바스크립트 [Link](https://github.com/neguri/dalin/tree/master/js_study)
 * 웹 [Link](https://github.com/neguri/dalin/tree/master/web_study)
 * 와이파이 [Link](https://github.com/neguri/dalin/tree/master/wifi)
+* SQL [Link](https://github.com/neguri/dalin/tree/master/etc)
