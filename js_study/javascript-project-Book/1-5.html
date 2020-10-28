@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Animation</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <style>
+            div{
+                width: 100px; height: 100px;
+                border: 2px solid;
+                margin-bottom: 20px;
+            }
+            #box1 {transition-duration: 2s;}
+        </style>
+    </head>
+
+    <body>
+        <h1> CSS and Javascript</h1>
+
+        <hr>
+        <div id ='box1'>css animation</div>
+        <div id ='box2'>java script animation</div>
+
+        <script>
+            var box1 = document.getElementById('box1');
+            var box2 = document.getElementById('box2');
+
+            box1.onclick = function(){
+                this.style.marginLeft = '200px';
+            };
+
+            box2.onclick = function() {
+                $(this).animate({
+                    marginLeft:'200px'}, 2000);
+                };
+        
+
+        </script>
+    </body>
+
+
+
+</html>

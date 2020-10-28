@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <header>
+        <title>구구단 예제</title>
+    </header>
+    <body>
+        <h1 id="title"> 구구단 출력 어플리케이션</h1>
+        <div id="content"></div>
+
+        <script>
+            var num = prompt('구구단 몇단을 출력할까요?','1 ~ 9');
+
+            if (num > 9 || num < 1) {
+                alert('1 ~ 9 중에서 입력하세요');
+            }else if(num == '' || isNaN(num)) {
+                alert('숫자를 입력하세요');
+            }else{
+                var content = document.querySelector('#content');
+                content.innerHTML =  "<h2>" + num + "단을 출력하기를 원하는군요</h2>"
+                
+                for(i = 1 ; i<=9; i++){
+                    document.write(num + ' * ' + i + ' = ' + i*num + '<br>');
+                }
+            }
+        </script>
+    </body>
+</html>
