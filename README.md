@@ -11,3 +11,4 @@
 * 웹 [Link](https://github.com/neguri/dalin/tree/master/web_study)
 * 와이파이 [Link](https://github.com/neguri/dalin/tree/master/wifi)
 * SQL [Link](https://github.com/neguri/dalin/tree/master/etc)
+* 통계 [Link](https://github.com/neguri/dalin/tree/master/etc)
