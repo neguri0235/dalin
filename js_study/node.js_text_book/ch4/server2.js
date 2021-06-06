@@ -5,6 +5,7 @@ http.createServer(async(req, res) => {
     try {
         const data = await fs.readFile('./server2.html');
         res.writeHead(200, { 'Content-Type':'text/html; charset=utf-8'});
+        console.log(typeof data);
         res.end(data);
     }catch(err) {
         console.error(err);
